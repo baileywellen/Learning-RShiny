@@ -2,8 +2,20 @@
 #import the library
 library(shiny)
 #Sets up a UI Object
-ui <- fluidPage()
+ui <- fluidPage(
+  #Input functions() - all of them end with the word Input()
+  sliderInput(inputId = "num", label = "Choose a number", value = 25, min = 1, max = 100),
+  plotOutput(outputId = "hist")
+  
+  #Output functions()
+)
 #Sets up a Server Object
-server <- function(input, output) {}
+server <- function(input, output) {
+  #what you save into output should be created with the render function
+  #braces around the code allow us to pass as many lines as we want to renderPlot() function
+  output$hist <- renderPlot({hist(rnorm(input$num))})
+  
+  
+}
 #Knit the two objects together into a Shiny App
 shinyApp(ui = ui, server = server)
