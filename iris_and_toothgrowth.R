@@ -52,12 +52,8 @@ ui <- fluidPage(
         condition = "input.dataset == 'Tooth Growth'",
         plotOutput(outputId = "tooth_barplot")
       )
-        
-      
     )
-    
   )
-
 )
 
 #Sets up a Server Object
@@ -81,7 +77,7 @@ server <- function(input, output) {
   
   #Plot Tooth Growth Data with Labels
   output$tooth_barplot <- renderPlot({barplot(c(mean(tooth_1()), mean(tooth_2())), 
-                                              main = paste("Mean Growth by Supplement and Dosage"), xlab  = "Supplement Type and Dosage (mg / day)", ylab = "Growth (cm)", 
+                                              main = paste("Mean Length by Supplement and Dosage"), xlab  = "Supplement Type and Dosage (mg / day)", ylab = "Mean Length", 
                                               col = c(input$color_1, input$color_2),  names.arg = c(paste(input$supp_category_1, ",", input$dose_category_1), paste(input$supp_category_2, ",", input$dose_category_2)))})
   
   
