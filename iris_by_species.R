@@ -5,9 +5,15 @@ library(shiny)
 #plotting only works with numerical data
 vars <- setdiff(names(iris), "Species")
 
+#all possible colors - it will default to the first one if nothing is selected
+colors <- c('white', 'blue', 'brown', 'black', 'grey', 'light grey', 'green', 'red', 'darkolivegreen', 'cyan', 'deeppink', 'coral')
+
 #Sets up a UI Object
 ui <- fluidPage(
   selectInput(inputId = "category", label = "Iris Category", choices = vars ),
+  selectInput(inputId = "setosa_color", label = "Setosa Color", choices = colors),
+  selectInput(inputId = "versicolor_color", label = "Versicolor Color", choices = colors),
+  selectInput(inputId = "virginica_color", label = "Virginica Color", choices = colors),
   plotOutput(outputId = "barplot")
 )
 
@@ -24,7 +30,7 @@ server <- function(input, output) {
     
   output$barplot <- renderPlot({barplot(c(mean(setosa()), mean(versicolor()), mean(virginica())), 
                                         main = paste("Mean", input$category, "by Species"), xlab  = "Species", ylab = "Mean (cm)", 
-                                        col = c('light grey', 'light blue', 'dark blue'), names.arg = c("Setosa", "Versicolor", "Virginica"))})
+                                        col = c(input$setosa_color, input$versicolor_color, input$virginica_color), names.arg = c("Setosa", "Versicolor", "Virginica"))})
   
   
 }
