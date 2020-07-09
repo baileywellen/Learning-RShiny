@@ -2,7 +2,7 @@
 #import the library
 library(shiny)
 
-possible_graphs <- c("gender", fleeing = "flee", "armed", "race", 'suspected mental illness' = "signs_of_mental_illness", 'body camera on' = "body_camera", "age" = 'age_bin', 'threat level' = "threat_level")
+possible_graphs <- c("gender", fleeing = "flee", "armed", "race", 'suspected mental illness' = "signs_of_mental_illness", 'body camera on' = "body_camera", "age" = 'age_group', 'threat level' = "threat_level")
 
 #rename the race column for clarity 
 police_shootings$race[police_shootings$race == "W"] <- "White"
@@ -13,7 +13,7 @@ police_shootings$race[police_shootings$race == "A"] <- "Asian"
 police_shootings$race[police_shootings$race == "O"] <- "Other"
 
 #put the ages into "Bins" 
-police_shootings$age_bin <- ifelse(police_shootings$age < 18, "Under 18",
+police_shootings$age_group <- ifelse(police_shootings$age < 18, "Under 18",
                        ifelse(police_shootings$age < 30, "18 - 30",
                               ifelse(police_shootings$age < 40, "30 - 40",
                                      ifelse(police_shootings$age < 50, "40 - 50", 
@@ -21,7 +21,7 @@ police_shootings$age_bin <- ifelse(police_shootings$age < 18, "Under 18",
 #Sets up a UI Object
 ui <- fluidPage(
   
-  titlePanel("Police Shootings Dashboard"),
+  titlePanel("Fatal Police Shootings Dashboard"),
   
   sidebarLayout(
     
@@ -29,17 +29,17 @@ ui <- fluidPage(
       box(width = 12,
           splitLayout(
              checkboxGroupInput(inputId = "states", label = "State(s)", choices = sort(unique(police_shootings$state)), selected = c("WI", "IL")),
-                    radioButtons(inputId = "details", label = "Case Detail", choices = sort(possible_graphs) 
+                    radioButtons(inputId = "details", label = "Case Detail", choices = sort(possible_graphs))
           )
-      )
-    ),width= 3,
+       ),width= 3,
       
-  ),
+    ),
    position = "right",
   
   
   mainPanel(
-    textOutput(outputId = "pie_label"),
+    textOutput(outputId = "state_label"),
+    textOutput(outputId = "details_label"),
     plotOutput(outputId = "piechart"),
     textOutput(outputId = "table_label"),
     tableOutput(outputId = "table")
@@ -55,7 +55,8 @@ ui <- fluidPage(
 #Sets up a Server Object
 server <- function(input, output) {
   
-  output$pie_label <- renderText("Comparison of Fatal Shootings by State")
+  output$state_label <- renderText({input$states})
+  output$details_label <- renderText(input$details)
   output$table_label <- renderText("Total Fatal Shootings of Selected States")
   chosen_states <- reactive({
     chosen_states <- filter(police_shootings, state %in% input$states)})
