@@ -3,6 +3,9 @@
 #import the library
 library(shiny)
 
+#provides an interface to JavaScript library DataTables
+library(DT)
+
 #plotting only works with numerical data
 iris_vars <- setdiff(names(iris), "Species")
 
@@ -46,11 +49,13 @@ ui <- fluidPage(
       
       conditionalPanel(
         condition = "input.dataset == 'Iris'",
-        plotOutput(outputId = "iris_barplot")
+        plotOutput(outputId = "iris_barplot"),
+        tableOutput(outputId = "iris_table")
       ),
       conditionalPanel(
         condition = "input.dataset == 'Tooth Growth'",
-        plotOutput(outputId = "tooth_barplot")
+        plotOutput(outputId = "tooth_barplot"),
+        tableOutput(outputId = "tooth_table")
       )
     )
   )
@@ -69,17 +74,32 @@ server <- function(input, output) {
   tooth_1 <- reactive({filter(ToothGrowth, supp == input$supp_category_1, dose == input$dose_category_1)[,"len"]})
   tooth_2 <- reactive({filter(ToothGrowth, supp == input$supp_category_2, dose == input$dose_category_2)[,"len"]})
   
+  iris_means <- reactive({c(mean(setosa()), mean(versicolor()), mean(virginica()))})
+  #find a y lim that is tall enough to show the values above the vars
+  iris_ylim <- reactive(c(0, 1.1*max(iris_means())))
   
   #plot Iris Data with Labels
-  output$iris_barplot <- renderPlot({barplot(c(mean(setosa()), mean(versicolor()), mean(virginica())), 
-                                        main = paste("Mean", input$iris_category, "by Species"), xlab  = "Species", ylab = "Mean (cm)", 
-                                        col = c(input$setosa_color, input$versicolor_color, input$virginica_color), names.arg = c("Setosa", "Versicolor", "Virginica"))})
+  output$iris_barplot <- renderPlot({p<- barplot(iris_means() ,main = paste("Mean", input$iris_category, "by Species"), xlab  = "Species", ylab = "Mean (cm)", 
+                                        col = c(input$setosa_color, input$versicolor_color, input$virginica_color), names.arg = c("Setosa", "Versicolor", "Virginica"), ylim = iris_ylim())
+                                    #Add a text label to display the height of each bar
+                                      text(x = p, y = iris_means(), label = iris_means(), pos = 3)#pos = 3 tells us we want to adjust the label on the top
+  })
+  
+  #Show table with the means
+  output$iris_table <- renderTable({data.frame(setosa(), versicolor(), virginica())})
+  
+  
+  tooth_means <- reactive({c(mean(tooth_1()), mean(tooth_2()))})
+  tooth_ylim <- reactive(c(0, 1.1 * max(tooth_means())))
   
   #Plot Tooth Growth Data with Labels
-  output$tooth_barplot <- renderPlot({barplot(c(mean(tooth_1()), mean(tooth_2())), 
-                                              main = paste("Mean Length by Supplement and Dosage"), xlab  = "Supplement Type and Dosage (mg / day)", ylab = "Mean Length", 
-                                              col = c(input$color_1, input$color_2),  names.arg = c(paste(input$supp_category_1, ",", input$dose_category_1), paste(input$supp_category_2, ",", input$dose_category_2)))})
+  output$tooth_barplot <- renderPlot({p <- barplot(tooth_means(), main = paste("Mean Length by Supplement and Dosage"), xlab  = "Supplement Type and Dosage (mg / day)", ylab = "Mean Length", ylim = tooth_ylim(),
+                                              col = c(input$color_1, input$color_2),  names.arg = c(paste(input$supp_category_1, ",", input$dose_category_1), paste(input$supp_category_2, ",", input$dose_category_2)))
+                                      text(x = p, y = tooth_means(), label = tooth_means(), pos = 3)
+  })
   
+  #Show Table with the means
+  output$tooth_table <- renderTable({data.frame(tooth_1(), tooth_2())})
   
 }
 #Knit the UI and the Server together with a Shiny Object
