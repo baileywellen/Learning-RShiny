@@ -1,4 +1,4 @@
-#Kaggle Source: https://www.kaggle.com/mrmorj/data-police-shootings
+#Kaggle Source - https://www.kaggle.com/mrmorj/data-police-shootings
 
 #The below 4 lines are the "Template" For a Shiny App 
 #import the library
@@ -6,6 +6,9 @@ library(shiny)
 library(shinythemes)
 library(shinydashboard)
 library(dplyr)
+library(readxl)
+
+police_shootings <- read_excel("fatal-police-shootings.xlsx")
 
 possible_graphs <- c("gender", fleeing = "flee", 'armed' = "weapon_category", "race", 'suspected mental illness' = "signs_of_mental_illness", 'body camera on' = "body_camera", "age" = 'age_group', 'threat level' = "threat_level")
 
@@ -121,5 +124,4 @@ server <- function(input, output) {
 }
 #Knit the two objects together into a Shiny App
 shinyApp(ui = ui, server = server)
-
 
