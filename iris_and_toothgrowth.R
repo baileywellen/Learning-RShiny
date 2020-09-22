@@ -2,6 +2,7 @@
 #The below 4 lines are the "Template" For a Shiny App 
 #import the library
 library(shiny)
+library(dplyr)
 
 #provides an interface to JavaScript library DataTables
 library(DT)
