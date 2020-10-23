@@ -1,6 +1,5 @@
 #Kaggle Source - https://www.kaggle.com/mrmorj/data-police-shootings
 
-#The below 4 lines are the "Template" For a Shiny App 
 #import the library
 library(shiny)
 library(shinythemes)
@@ -38,7 +37,7 @@ police_shootings$weapon_category <- ifelse(grepl("unarmed", tolower(police_shoot
                                                   ifelse(grepl("knife", tolower(police_shootings$armed)), "knife", "other")))
 
 
-#Sets up a UI Object
+#Set up a UI Object
 ui <- fluidPage(
   theme = shinytheme("superhero"),
   
